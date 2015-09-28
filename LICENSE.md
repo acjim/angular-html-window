@@ -1,6 +1,6 @@
 The MIT License (MIT)
 
-Copyright (c) 2015 Ramón Lamana
+Copyright (c) 2015 Ramón Lamana  
 Copyright (c) 2015 the ACJIM 2015 Team, https://github.com/orgs/acjim/teams/member
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
