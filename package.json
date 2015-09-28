@@ -1,0 +1,9 @@
+{
+  "name": "angular-html-window",
+  "version": "0.0.1",
+  "description": "Provides native angular windows",
+  "main": "index.js",
+  "dependencies": {
+    "angular": "^1"
+  }
+}

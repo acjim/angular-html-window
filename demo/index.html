@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="demo" class="no-js">
+<head>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width">
+
+    <base href="../"/>
+    <title>Angular Html Window Demo</title>
+
+    <!-- Le css -->
+    <link href="http://getbootstrap.com/dist/css/bootstrap.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="src/ngHtmlWindow.css"/>
+    <link rel="stylesheet" href="demo/css/style.css">
+
+
+</head>
+<body ng-controller="demoCtrl">
+
+    <!-- workspace -->
+    <div class="fill">
+        <ng-html-window ng-repeat="window in windows" options={{options}} title="This is a title">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris at nisi sed enim ornare dictum at et felis. Nam bibendum ultricies eros id dictum. Integer auctor nisi sem, a sodales diam tincidunt vel. Proin at elit convallis, efficitur libero nec, elementum erat. Curabitur fermentum, felis a dignissim ornare, nibh ex mollis tellus, at tristique nibh lorem posuere nulla. Nullam rutrum fermentum nunc nec condimentum. Maecenas erat purus, dignissim ac laoreet non, molestie viverra tellus. Sed vitae purus et massa maximus ultricies luctus at nisl.
+
+            Vestibulum fringilla congue turpis, vel tempus massa faucibus a. Suspendisse sit amet tortor erat. Donec faucibus, arcu vitae auctor tempor, magna massa feugiat risus, eu rutrum lectus urna dignissim lacus. Duis faucibus justo ut nisl viverra, eu interdum turpis vehicula. Phasellus sit amet turpis sollicitudin, ultricies augue at, semper sapien. Duis fringilla bibendum diam, eget rhoncus magna luctus nec. Cras est mauris, egestas vitae arcu ac, faucibus gravida justo. Pellentesque quis aliquet quam. Suspendisse ut nunc sed diam volutpat varius.
+
+            Sed nec ornare dolor, et consequat augue. Sed in velit at felis lobortis dignissim id sed leo. Nam justo magna, consectetur sed elit placerat, suscipit porttitor velit. Sed non imperdiet ex, vel vulputate risus. Ut ac tincidunt ex. Nam at euismod libero. Nullam nec porta dui. Sed elit ligula, ornare a efficitur vel, posuere ut libero. Donec eu ultrices sapien, a congue est.
+
+            Mauris vestibulum luctus arcu id blandit. Nulla id orci ut nisl consequat sollicitudin. Praesent ac ornare dui, vitae tincidunt metus. Quisque vel erat mi. Morbi nec neque nisl. Pellentesque porta metus erat, ac porttitor purus efficitur nec. In hac habitasse platea dictumst. Sed a pharetra augue, mollis semper libero. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Interdum et malesuada fames ac ante ipsum primis in faucibus. Nulla ornare hendrerit sem mattis feugiat.
+
+            Cras dictum auctor porta. Donec ullamcorper, lectus fermentum egestas vulputate, purus magna sollicitudin nisl, ut volutpat augue enim id justo. Proin tincidunt sodales odio, eu lacinia urna rhoncus sed. Interdum et malesuada fames ac ante ipsum primis in faucibus. Aliquam tristique dui vel tristique rutrum. Fusce a quam sit amet ante rhoncus lacinia. Sed venenatis odio eget tortor euismod rhoncus. Duis eget lobortis nisi. Integer odio metus, tincidunt eleifend ipsum sed, hendrerit tristique libero. Nam laoreet accumsan purus non sagittis. In convallis, est suscipit vestibulum efficitur, nisi quam sollicitudin neque, nec tempor neque elit at ante. Morbi non volutpat quam.
+        </ng-html-window>
+    </div> <!-- /workspace -->
+
+    <!-- Le javascript -->
+    <script src="node_modules/angular/angular.js"></script>
+    <script src="src/ngHtmlWindow.js"></script>
+    <script src="demo/js/app.js"></script>
+
+</body>
+</html>
