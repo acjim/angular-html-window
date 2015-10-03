@@ -305,12 +305,12 @@
                     },
                     set active(value) {
                         if(value) {
-                            $scope.$broadcast('active', this);
+                            $scope.$broadcast('ngWindow.active', this);
                             this.wndElement.addClass('active');
                             this.wndElement.removeClass('inactive');
                         }
                         else {
-                            $scope.$broadcast('inactive', this);
+                            $scope.$broadcast('ngWindow.inactive', this);
                             this.wndElement.removeClass('active');
                             this.wndElement.addClass('inactive');
                         }

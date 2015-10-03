@@ -10,13 +10,13 @@ Dispatched when a window is resized, debounced to occur only every 50ms.
 $scope.$on('ngWindow.resize', function(e, windowObject){});
 ```
 
-### Focus
+### ngWindow.active
 Only one window can have the focus. When a window gets focused (by clicking it), a broadcast with a reference to the window is sent to all child scopes:
 ```javascript
-$scope.$broadcast('active', this);
+$scope.$on('ngWindow.active', function(e, windowObject(){});
 ```
-
+### ngWindow.inactive
 The same goes for when a window looses the focus:
 ```javascript
-$scope.$broadcast('inactive', this);
+$scope.$on('ngWindow.inactive', function(e, windowObject(){});
 ```
