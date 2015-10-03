@@ -16,8 +16,7 @@
             replace: true,
             transclude: true,
             scope: {
-                title: '@',
-                options: '@'
+                options: '='
             },
             link: function ($scope, element, attr) {
 
@@ -26,23 +25,55 @@
                     NG_WINDOW_TITLE = ".ng-window-title",
                     NG_WINDOW_TITLEBAR = ".ng-window-titlebar",
                     NG_WINDOW_CONTENT = ".ng-window-content",
-                    NG_WINDOW_RESIZEHANDLES = ".ng-window-resize";
+                    NG_WINDOW_RESIZEHANDLES = ".ng-window-resize",
+                    NG_WINDOW_MAXIMIZE = ".ng-window-maximize",
+                    NG_WINDOW_CLOSE = ".ng-window-close";
+
+                var smoothValue = 3;
 
 
                 var Window = function (options) {
 
+                    this.options = {
+                        title: options.title || 'Untitled Window',
+                        width: options.width || 400,
+                        height: options.height || 200,
+                        x: options.x || 0,
+                        y: options.y || 0,
+                        minWidth: options.minWidth || 200,
+                        maxWidth: options.maxWidth || Infinity,
+                        minHeight: options.minHeight || 100,
+                        maxHeight: options.maxHeight || Infinity,
+                        resizable: options.resizable || true,
+                        appendTo: options.appendTo || element.parent(),
+
+
+                        onOpen: options.onOpen || null,
+                        onClose: options.onClose || function() {
+                            return true;
+                        },
+                        onResize: options.onResize || function() {
+                            if (options.onResize) { options.onResize() }
+                        },
+                        onActivate: options.onActivate || null,
+                        onDeactivate: options.onDeactivate || null,
+                        onDragstart: options.onDragstart ||null,
+                        onDragend: options.onDragend || null
+                    };
+
+
                     // Get references to window elements
-                    this.appendTo = element.parent();
+                    this.appendTo = this.options.appendTo;
                     this.wndElement = element;
                     this.titleBar = angular.element(element[0].querySelectorAll(NG_WINDOW_TITLEBAR));
                     this.resizeHandles = angular.element(element[0].querySelectorAll(NG_WINDOW_RESIZEHANDLES));
-                    this.title = angular.element(element[0].querySelectorAll(NG_WINDOW_TITLE));
-
+                    this.closeButton = angular.element(element[0].querySelectorAll(NG_WINDOW_CLOSE));
 
                     // Add event listeners
                     this.appendTo.bind('mousemove', this.events.mousemove.bind(this));
                     this.appendTo.bind('mouseup', this.events.mouseup.bind(this));
                     this.titleBar.bind('mousedown', this.events.title_mousedown.bind(this));
+                    this.closeButton.bind('click', this.events.close.bind(this));
 
                     for (var i = 0; i < this.resizeHandles.length; i++) {
                         angular.element(this.resizeHandles[i])
@@ -50,29 +81,16 @@
                     }
 
 
-                    options = options || {
-                            title: 'Untitled Window',
-                            width: 400,
-                            height: 200,
-                            x: 0,
-                            y: 0,
-                            minWidth: 200,
-                            maxWidth: Infinity,
-                            minHeight: 100,
-                            maxHeight: Infinity,
-
-                            resizable: true
-                        };
-
-                    this.options = options;
 
                     // Dimensions
-                    this.width = options.width;
-                    this.height = options.height;
+                    this.width = this.options.width;
+                    this.height = this.options.height;
 
-                    this.x = options.x;
-                    this.y = options.y;
+                    this.x = this.options.x;
+                    this.y = this.options.y;
                     this.z = 10000;
+
+                    this.title = this.options.title;
 
                     // State
                     this.active = false;
@@ -83,8 +101,7 @@
                     this._destroyed = false;
 
                     // Properties
-                    this.movable = true;
-                    this.resizable = options.resizable;
+                    this.resizable = this.options.resizable;
 
                 };
 
@@ -152,14 +169,16 @@
                                     x = event.x,
                                     y = event.y;
 
+
+                                // resizing in east west direction
                                 if (resizeDirection.indexOf("e") > -1) {
 
-                                    this.width = this.constrain(x - initialPosition.left, options.minWidth, options.maxWidth);
+                                    this.width = this.constrain(x - initialPosition.left + smoothValue, options.minWidth, options.maxWidth);
 
                                 } else if (resizeDirection.indexOf("w") > -1) {
 
                                     windowRight = initialPosition.left + initialSize.width;
-                                    newWidth = this.constrain(windowRight - x, options.minWidth, options.maxWidth);
+                                    newWidth = this.constrain(windowRight - x - smoothValue, options.minWidth, options.maxWidth);
 
                                     this.width = newWidth;
                                     this.x = windowRight - newWidth;
@@ -167,7 +186,8 @@
                                 }
 
 
-                                if (resizeDirection.indexOf("n") > -1) {            // resizing in north direction
+                                // resizing in north south direction
+                                if (resizeDirection.indexOf("n") > -1) {
 
                                     windowBottom = initialPosition.top + initialSize.height;
                                     newHeight = this.constrain(windowBottom - y, options.minHeight, options.maxHeight);
@@ -175,17 +195,28 @@
                                     this.y = windowBottom - newHeight;
                                     this.height = newHeight;
 
-                                } else if (resizeDirection.indexOf("s") > -1) {     // resizing in south direction
+                                } else if (resizeDirection.indexOf("s") > -1) {
 
                                     this.height = this.constrain(y - initialPosition.top, options.minHeight, options.maxHeight);
 
                                 }
+
+                                this.options.onResize();
 
                             }
                         },
                         mouseup: function(event) {
                             this._moving && this._stopMove();
                             this._resizing && this._stopResize();
+                        },
+                        close: function(event) {
+                            var options = this.options;
+
+                            this.wndElement.remove();
+                            $scope.$destroy();
+
+                            options.onClose();
+
                         }
                     },
                     _stopMove: function() {
@@ -237,6 +268,12 @@
                     get resizable() {
                         return this._resizable;
                     },
+                    set title(title) {
+                        $scope.title = title;
+                    },
+                    get title() {
+                        return this.title;
+                    },
                     resize: function(w, h) {
                         this.width = w;
                         this.height = h;
@@ -259,7 +296,7 @@
 
                 };
 
-                new Window();
+                $scope.window = new Window($scope.options);
 
             }
         };
