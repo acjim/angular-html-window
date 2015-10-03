@@ -2,6 +2,11 @@
   "name": "angular-html-window",
   "version": "0.0.1",
   "description": "Provides native angular windows",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/acjim/angular-html-window.git"
+  },
+  "license": "MIT",
   "main": "index.js",
   "dependencies": {
     "angular": "^1"
