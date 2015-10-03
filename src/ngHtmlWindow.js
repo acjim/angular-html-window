@@ -4,9 +4,24 @@
     'use strict';
 
     angular.module('ngHtmlWindow', [])
-        .directive('ngHtmlWindow', ['$document', ngHtmlWindow]);
+        .service('ngWindowManager', ngWindowManager);
 
-    function ngHtmlWindow($document) {
+    function ngWindowManager() {
+
+        var topZ = 1;
+
+        return {
+            getTopZ: function() {
+                return topZ++;
+            }
+        }
+
+    }
+
+    angular.module('ngHtmlWindow')
+        .directive('ngHtmlWindow', ['$document', 'ngWindowManager', ngHtmlWindow]);
+
+    function ngHtmlWindow($document, ngWindowManager) {
 
         return {
             templateUrl: function(tElement, tAttrs) {
@@ -74,6 +89,7 @@
                     this.appendTo.bind('mouseup', this.events.mouseup.bind(this));
                     this.titleBar.bind('mousedown', this.events.title_mousedown.bind(this));
                     this.closeButton.bind('click', this.events.close.bind(this));
+                    this.wndElement.bind('mousedown', this.events.wnd_mousedown.bind(this));
 
                     for (var i = 0; i < this.resizeHandles.length; i++) {
                         angular.element(this.resizeHandles[i])
@@ -88,17 +104,13 @@
 
                     this.x = this.options.x;
                     this.y = this.options.y;
-                    this.z = 10000;
+                    this.z = ngWindowManager.getTopZ();
 
                     this.title = this.options.title;
 
                     // State
                     this.active = false;
                     this.maximized = false;
-                    this.minimized = false;
-
-                    this._closed = true;
-                    this._destroyed = false;
 
                     // Properties
                     this.resizable = this.options.resizable;
@@ -113,6 +125,10 @@
                     self: this,
 
                     events: {
+                        wnd_mousedown: function(event) {
+                            this.focus();
+                            this.z = ngWindowManager.getTopZ();
+                        },
                         resize_handler_mousedown: function(event) {
 
                             this._resizing = {
@@ -274,9 +290,34 @@
                     get title() {
                         return this.title;
                     },
-                    resize: function(w, h) {
-                        this.width = w;
-                        this.height = h;
+                    set active(value) {
+                        if(value) {
+                            $scope.$broadcast('active', this);
+                            this.wndElement.addClass('active');
+                            this.wndElement.removeClass('inactive');
+                        }
+                        else {
+                            $scope.$broadcast('inactive', this);
+                            this.wndElement.removeClass('active');
+                            this.wndElement.addClass('inactive');
+                        }
+                    },
+                    get active() {
+                        return this.active;
+                    },
+                    set z(value) {
+                        this.wndElement.css('z-index', value);
+                    },
+                    get z() {
+                        return this.z;
+                    },
+                    focus: function() {
+                        this.active = true;
+                        return this;
+                    },
+
+                    blur: function() {
+                        this.active = false;
                         return this;
                     },
                     move: function(x, y) {

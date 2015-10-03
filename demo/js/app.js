@@ -36,8 +36,4 @@ angular.module('demo', ['ngHtmlWindow'])
             }
         };
 
-        $scope.$watch($scope.windows, function () {
-            console.log($scope.windows);
-        });
-
     });
