@@ -19,9 +19,9 @@
     }
 
     angular.module('ngHtmlWindow')
-        .directive('ngHtmlWindow', ['$document', 'ngWindowManager', ngHtmlWindow]);
+        .directive('ngHtmlWindow', ['$document', '$timeout', 'ngWindowManager', ngHtmlWindow]);
 
-    function ngHtmlWindow($document, ngWindowManager) {
+    function ngHtmlWindow($document, $timeout, ngWindowManager) {
 
         return {
             templateUrl: function(tElement, tAttrs) {
@@ -44,7 +44,8 @@
                     NG_WINDOW_MAXIMIZE = ".ng-window-maximize",
                     NG_WINDOW_CLOSE = ".ng-window-close";
 
-                var smoothValue = 3;
+                var smoothValue = 3,
+                    debounceEvent = null;
 
 
                 var Window = function (options) {
@@ -126,8 +127,12 @@
 
                     events: {
                         wnd_mousedown: function(event) {
+
                             this.focus();
                             this.z = ngWindowManager.getTopZ();
+
+                            event.preventDefault();
+
                         },
                         resize_handler_mousedown: function(event) {
 
@@ -216,6 +221,14 @@
                                     this.height = this.constrain(y - initialPosition.top, options.minHeight, options.maxHeight);
 
                                 }
+
+                                // broadcast an event that resize happened (debounced to 50ms)
+                                if(debounceEvent) $timeout.cancel(debounceEvent);
+                                debounceEvent = $timeout(function() {
+                                    $scope.$broadcast('ngWindow.resize', this);
+                                    debounceEvent = null;
+                                }, 50);
+
 
                                 this.options.onResize();
 
