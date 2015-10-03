@@ -1,5 +1,6 @@
 # Angular HTML Window
-This is a AngularJS module that provides a draggable and resizable window directive.
+This is a AngularJS module that provides a draggable and resizable window directive.  
+Based on https://github.com/rlamana/Ventus
 
 ## Events
 Events are broadcast on the scope where the window is attached. This means they are available to any controller inside of the ng-html-window container.
