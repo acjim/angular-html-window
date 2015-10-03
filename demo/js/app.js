@@ -25,13 +25,9 @@ angular.module('demo', ['ngHtmlWindow'])
                 x: 100,
                 y: 100,
                 onClose: function() {
-                    console.log("close function");
-
                     var windows = $scope.windows;
                     var index = windows.indexOf(this);
                     windows.splice(index, 1);
-
-                    console.log($scope.windows);
                 }
             }
         };
