@@ -5,7 +5,10 @@ Based on https://github.com/rlamana/Ventus
 ## How to use
 
 ### Install via npm
-TODO
+Install the package over npm.
+```
+npm i angular-html-window
+```
 
 ### Include in your project
 Include the css and javascript in your html file.
@@ -17,7 +20,6 @@ And include it as a dependency in your application.
 ```javascript
 angular.module('demo', ['ngHtmlWindow']);
 ```
-
 
 
 ## Events
