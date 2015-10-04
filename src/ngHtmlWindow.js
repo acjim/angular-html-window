@@ -75,31 +75,31 @@
 
         return {
             template: "<div class=\"ng-window\">"
-            + "    <div class=\"ng-window-titlebar\">"
-            + "        <span class=\"ng-window-title\">{{wnd.title}}<\/span>"
-            + "        <div class=\"ng-window-actions\">"
-            + "            <a role=\"button\">"
-            + "                <span id=\"ng-window-maximize\""
-            + "                      ng-class=\"{'ng-window-icon ng-window-maximize': !wnd.maximized, 'ng-window-icon ng-window-contract': wnd.maximized }\">"
-            + "                <\/span>"
-            + "            <\/a>"
-            + "            <a role=\"button\">"
-            + "                <span class=\"ng-window-icon ng-window-close\"><\/span>"
-            + "            <\/a>"
-            + "        <\/div>"
-            + "    <\/div>"
-            + "    <div class=\"ng-window-content\">"
-            + "        <div ng-transclude=\"true\"><\/div>"
-            + "    <\/div>"
-            + "    <div class=\"ng-window-resize ng-window-resize-n\"><\/div>"
-            + "    <div class=\"ng-window-resize ng-window-resize-e\"><\/div>"
-            + "    <div class=\"ng-window-resize ng-window-resize-s\"><\/div>"
-            + "    <div class=\"ng-window-resize ng-window-resize-w\"><\/div>"
-            + "    <div class=\"ng-window-resize ng-window-resize-se\"><\/div>"
-            + "    <div class=\"ng-window-resize ng-window-resize-sw\"><\/div>"
-            + "    <div class=\"ng-window-resize ng-window-resize-ne\"><\/div>"
-            + "    <div class=\"ng-window-resize ng-window-resize-nw\"><\/div>"
-            + "<\/div>",
+                   + "    <div class=\"ng-window-titlebar\">"
+                   + "        <span class=\"ng-window-title\">{{wnd.title}}<\/span>"
+                   + "        <div class=\"ng-window-actions\">"
+                   + "            <a role=\"button\">"
+                   + "                <span id=\"ng-window-maximize\""
+                   + "                      ng-class=\"{'ng-window-icon ng-window-maximize': !wnd.maximized, 'ng-window-icon ng-window-contract': wnd.maximized }\">"
+                   + "                <\/span>"
+                   + "            <\/a>"
+                   + "            <a role=\"button\">"
+                   + "                <span class=\"ng-window-icon ng-window-close\"><\/span>"
+                   + "            <\/a>"
+                   + "        <\/div>"
+                   + "    <\/div>"
+                   + "    <div class=\"ng-window-content\">"
+                   + "        <div ng-transclude=\"true\"><\/div>"
+                   + "    <\/div>"
+                   + "    <div class=\"ng-window-resize ng-window-resize-n\"><\/div>"
+                   + "    <div class=\"ng-window-resize ng-window-resize-e\"><\/div>"
+                   + "    <div class=\"ng-window-resize ng-window-resize-s\"><\/div>"
+                   + "    <div class=\"ng-window-resize ng-window-resize-w\"><\/div>"
+                   + "    <div class=\"ng-window-resize ng-window-resize-se\"><\/div>"
+                   + "    <div class=\"ng-window-resize ng-window-resize-sw\"><\/div>"
+                   + "    <div class=\"ng-window-resize ng-window-resize-ne\"><\/div>"
+                   + "    <div class=\"ng-window-resize ng-window-resize-nw\"><\/div>"
+                   + "<\/div>",
             restrict: 'E',
             replace: true,
             transclude: true,
@@ -208,17 +208,9 @@
 
                             this._resizing = {
                                 resizeDirection: event.currentTarget.className.replace("ng-window-resize ng-window-resize-", ""),
-                                initialSize: {
-                                    width: this.width,
-                                    height: this.height
-                                },
-                                initialPosition: {
-                                    top: this.y,
-                                    left: this.x
-                                }
-
+                                offset: this.wndElement[0].getBoundingClientRect(),
+                                containerOffset: this.appendTo[0].getBoundingClientRect()
                             };
-                            console.log(this.appendTo.offset);
 
                             angular.element($document[0].body).css('cursor', this._resizing.resizeDirection + '-resize');
 
@@ -254,8 +246,8 @@
                             if(this._resizing) {
 
                                 var resizeDirection = this._resizing.resizeDirection,
-                                    initialPosition = this._resizing.initialPosition,
-                                    initialSize = this._resizing.initialSize,
+                                    offset = this._resizing.offset,
+                                    containerOffset = this._resizing.containerOffset,
                                     newHeight,
                                     newWidth,
                                     newY,
@@ -270,17 +262,14 @@
                                 // resizing in east west direction
                                 if (resizeDirection.indexOf("e") > -1) {
 
-                                    newWidth = this.constrain(x - initialPosition.left + resizeHandlesSmoothValue, options.minWidth, options.maxWidth);
+                                    newWidth = this.constrain(x - offset.left + resizeHandlesSmoothValue, options.minWidth, options.maxWidth);
 
                                 } else if (resizeDirection.indexOf("w") > -1) {
 
-                                    windowRight = initialPosition.left + initialSize.width;
-                                    console.log("x: " + x);
-                                    console.log("posLeft: " + initialPosition.left);
+                                    windowRight = offset.left + offset.width;
 
                                     newWidth = this.constrain(windowRight - x - resizeHandlesSmoothValue, options.minWidth, options.maxWidth);
-
-                                    newX = windowRight - newWidth;
+                                    newX = windowRight - newWidth - containerOffset.left;
 
                                 }
 
@@ -288,14 +277,15 @@
                                 // resizing in north south direction
                                 if (resizeDirection.indexOf("n") > -1) {
 
-                                    windowBottom = initialPosition.top + initialSize.height;
-                                    newHeight = this.constrain(windowBottom - y, options.minHeight, options.maxHeight);
+                                    windowBottom = offset.top + offset.height;
 
-                                    newY = windowBottom - newHeight;
+                                    newHeight = this.constrain(windowBottom - y, options.minHeight, options.maxHeight);
+                                    newY = windowBottom - newHeight - containerOffset.top;
+
 
                                 } else if (resizeDirection.indexOf("s") > -1) {
 
-                                    newHeight = this.constrain(y - initialPosition.top, options.minHeight, options.maxHeight);
+                                    newHeight = this.constrain(y - offset.top, options.minHeight, options.maxHeight);
 
                                 }
 
