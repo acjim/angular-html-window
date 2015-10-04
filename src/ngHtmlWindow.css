@@ -9,6 +9,17 @@
     min-width: 90px;
 }
 
+.ng-window.active {
+    box-shadow: 1px 1px 7px 1px rgba(51, 122, 183,0.2);
+    border-color: rgba(51, 122, 183, 0.6);
+}
+
+.ng-window.active .ng-window-titlebar {
+    background-color: #337ab7;
+    border-color: #337ab7;
+    color: #fff;
+}
+
 .ng-window-titlebar {
     border-bottom: 1px solid #ccc;
     border-radius: 4px 4px 0 0;
@@ -22,7 +33,6 @@
     cursor: default;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
-    -khtml-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
@@ -42,6 +52,7 @@
     right: .4em;
     padding-top: .4em;
     font-size: 12pt;
+    color: inherit;
 }
 
 .ng-window-content {
@@ -124,6 +135,7 @@
 
 a, a:hover, a:active, a:visited {
     text-decoration:none;
+    color: inherit;
 }
 
 @font-face {
@@ -147,7 +159,6 @@ a, a:hover, a:active, a:visited {
     font-weight:400;
     line-height:1;
     -webkit-font-smoothing:antialiased;
-    -moz-osx-font-smoothing: grayscale;
 }
 
 

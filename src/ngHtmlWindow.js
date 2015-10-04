@@ -8,12 +8,62 @@
 
     function ngWindowManager() {
 
-        var topZ = 1;
+        var currentZ = 1;
+
+        var windows = [];
 
         return {
-            getTopZ: function() {
-                return topZ++;
+            getCurrentZValue: getCurrentZValue,
+            addWindow: addWindow,
+            closeWindow: closeWindow,
+            focus: focus
+        };
+
+        //////////////////
+
+        function getCurrentZValue() {
+            return currentZ++;
+        }
+
+        function addWindow(win) {
+            windows.push(win);
+            win.focus();
+        }
+
+        function closeWindow(win) {
+            //Remove window from array
+            var id = windows.indexOf(win);
+            windows.splice(id, 1);
+
+            //Set new active window
+            var length = windows.length;
+            if (length > 0) {
+                windows[windows.length - 1].focus();
             }
+        }
+
+        function focus(win) {
+
+            var maxZ = 20000;
+
+            //Remove window from array and add it to the top of it
+            var index = windows.indexOf(win);
+            windows.splice(index, 1);
+            windows.push(win);
+
+            for (var i = 0; i < windows.length; i++) {
+                windows[i].blur();
+            }
+
+            // Reset z values if it exceeds maxZ
+            if (currentZ > maxZ + windows.length) {
+                for (var z, i = windows.length; i--;) {
+                    z = windows[i].z;
+                    windows[i].z = z - maxZ;
+                }
+            }
+
+            win.z = getCurrentZValue();
         }
 
     }
@@ -33,16 +83,12 @@
             scope: {
                 options: '='
             },
-            link: function ($scope, element, attr) {
+            link: function ($scope, element) {
 
                 // classNames
-                var NG_WINDOW = ".ng-window",
-                    NG_WINDOW_TITLE = ".ng-window-title",
-                    NG_WINDOW_TITLEBAR = ".ng-window-titlebar",
-                    NG_WINDOW_CONTENT = ".ng-window-content",
+                var NG_WINDOW_TITLEBAR = ".ng-window-titlebar",
                     NG_WINDOW_RESIZEHANDLES = ".ng-window-resize",
                     NG_WINDOW_MAXIMIZE = "#ng-window-maximize",
-                    NG_WINDOW_RESTORE = ".ng-window-contract",
                     NG_WINDOW_CLOSE = ".ng-window-close";
 
                 var smoothValue = 3,
@@ -108,7 +154,7 @@
 
                     this.x = this.options.x;
                     this.y = this.options.y;
-                    this.z = ngWindowManager.getTopZ();
+                    this.z = ngWindowManager.getCurrentZValue();
 
                     this.title = this.options.title;
 
@@ -120,6 +166,8 @@
                     this.resizable = this.options.resizable;
                     this.movable = true;
 
+                    ngWindowManager.addWindow(this);
+
                 };
 
                 Window.prototype = {
@@ -130,12 +178,8 @@
 
                     events: {
                         wnd_mousedown: function(event) {
-
                             this.focus();
-                            this.z = ngWindowManager.getTopZ();
-
                             event.preventDefault();
-
                         },
                         resize_handler_mousedown: function(event) {
 
@@ -239,11 +283,11 @@
 
                             }
                         },
-                        mouseup: function(event) {
+                        mouseup: function() {
                             this._moving && this._stopMove();
                             this._resizing && this._stopResize();
                         },
-                        maximize: function(event) {
+                        maximize: function() {
 
                             if(this.active) {
                                 this.maximized = !this.maximized;
@@ -252,13 +296,16 @@
                                 });
                             }
                         },
-                        close: function(event) {
+                        close: function() {
+
                             var options = this.options;
+
+                            ngWindowManager.closeWindow(this);
+
+                            options.onClose();
 
                             this.wndElement.remove();
                             $scope.$destroy();
-
-                            options.onClose();
 
                         }
                     },
@@ -318,20 +365,30 @@
                     get resizable() {
                         return this._resizable;
                     },
-                    set title(title) {
-                        $scope.title = title;
+                    set title(value) {
+                        this._title = value;
                     },
                     get title() {
-                        return this.title;
+                        return this._title;
                     },
                     set active(value) {
-                        if(value) { //TODO: remove active from other windows (--> windowManagerService)
-                            $scope.$broadcast('ngWindow.active', this);
-                            this.wndElement.addClass('active');
-                            this.wndElement.removeClass('inactive');
-                        }
-                        else {
+
+                        if(value) {
+
+                            // Don't execute that code, if it is already active
+                            if (!this._active) {
+                                //Set all other windows inactive
+                                ngWindowManager.focus(this);
+
+                                $scope.$broadcast('ngWindow.active', this);
+
+                                this.wndElement.addClass('active');
+                                this.wndElement.removeClass('inactive');
+                            }
+
+                        } else {
                             $scope.$broadcast('ngWindow.inactive', this);
+
                             this.wndElement.removeClass('active');
                             this.wndElement.addClass('inactive');
                         }
@@ -388,7 +445,7 @@
                             }
 
                         }
-                        this._maximized = $scope.maximized = value;
+                        this._maximized = value;
 
                     },
                     get movable() {
