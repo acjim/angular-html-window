@@ -19,7 +19,7 @@
     min-height: 29px;
     padding: .4em 0;
     margin-top: -29px;
-    cursor: move;
+    cursor: default;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
@@ -121,6 +121,11 @@
 
 
 /***** Fonts *****/
+
+a, a:hover, a:active, a:visited {
+    text-decoration:none;
+}
+
 @font-face {
     font-family: "custom-icon-font";
     src:url("fonts/custom-icon-font.eot");

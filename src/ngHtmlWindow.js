@@ -41,7 +41,8 @@
                     NG_WINDOW_TITLEBAR = ".ng-window-titlebar",
                     NG_WINDOW_CONTENT = ".ng-window-content",
                     NG_WINDOW_RESIZEHANDLES = ".ng-window-resize",
-                    NG_WINDOW_MAXIMIZE = ".ng-window-maximize",
+                    NG_WINDOW_MAXIMIZE = "#ng-window-maximize",
+                    NG_WINDOW_RESTORE = ".ng-window-contract",
                     NG_WINDOW_CLOSE = ".ng-window-close";
 
                 var smoothValue = 3,
@@ -81,9 +82,10 @@
                     // Get references to window elements
                     this.appendTo = this.options.appendTo;
                     this.wndElement = element;
-                    this.titleBar = angular.element(element[0].querySelectorAll(NG_WINDOW_TITLEBAR));
+                    this.titleBar = angular.element(element[0].querySelector(NG_WINDOW_TITLEBAR));
                     this.resizeHandles = angular.element(element[0].querySelectorAll(NG_WINDOW_RESIZEHANDLES));
-                    this.closeButton = angular.element(element[0].querySelectorAll(NG_WINDOW_CLOSE));
+                    this.maximizeButton = angular.element(element[0].querySelector(NG_WINDOW_MAXIMIZE));
+                    this.closeButton = angular.element(element[0].querySelector(NG_WINDOW_CLOSE));
 
                     // Add event listeners
                     this.appendTo.bind('mousemove', this.events.mousemove.bind(this));
@@ -91,12 +93,13 @@
                     this.titleBar.bind('mousedown', this.events.title_mousedown.bind(this));
                     this.closeButton.bind('click', this.events.close.bind(this));
                     this.wndElement.bind('mousedown', this.events.wnd_mousedown.bind(this));
+                    this.maximizeButton.bind('click', this.events.maximize.bind(this));
 
+                    //Add resize listeners
                     for (var i = 0; i < this.resizeHandles.length; i++) {
                         angular.element(this.resizeHandles[i])
                             .bind('mousedown', this.events.resize_handler_mousedown.bind(this));
                     }
-
 
 
                     // Dimensions
@@ -115,6 +118,7 @@
 
                     // Properties
                     this.resizable = this.options.resizable;
+                    this.movable = true;
 
                 };
 
@@ -123,7 +127,6 @@
                     _resizing: null,
                     _moving: null,
                     _restore: null,
-                    self: this,
 
                     events: {
                         wnd_mousedown: function(event) {
@@ -155,10 +158,12 @@
                         },
                         title_mousedown: function(e) {
 
-                            this._moving = this.toLocal({
-                                x: event.pageX,
-                                y: event.pageY
-                            });
+                            if (this.movable) {
+                                this._moving = this.toLocal({
+                                    x: event.pageX,
+                                    y: event.pageY
+                                });
+                            }
 
                             e.preventDefault();
                         },
@@ -238,6 +243,15 @@
                             this._moving && this._stopMove();
                             this._resizing && this._stopResize();
                         },
+                        maximize: function(event) {
+
+                            if(this.active) {
+                                this.maximized = !this.maximized;
+                                $scope.$apply(function() {
+                                    $scope.maximized;
+                                });
+                            }
+                        },
                         close: function(event) {
                             var options = this.options;
 
@@ -291,9 +305,16 @@
                         return parseInt(this.wndElement.css('top'), 10);
                     },
                     set resizable(value) {
-                        this._resizable = !!value;
-                    },
 
+                        if (value) {
+                            this.resizeHandles.css('display', '');
+                        } else {
+                            //Remove resize listeners
+                            this.resizeHandles.css('display', 'none');
+                        }
+
+                        this._resizable = value;
+                    },
                     get resizable() {
                         return this._resizable;
                     },
@@ -304,7 +325,7 @@
                         return this.title;
                     },
                     set active(value) {
-                        if(value) {
+                        if(value) { //TODO: remove active from other windows (--> windowManagerService)
                             $scope.$broadcast('ngWindow.active', this);
                             this.wndElement.addClass('active');
                             this.wndElement.removeClass('inactive');
@@ -314,23 +335,90 @@
                             this.wndElement.removeClass('active');
                             this.wndElement.addClass('inactive');
                         }
+
+                        this._active = value
+
                     },
                     get active() {
-                        return this.active;
+                        return this._active;
                     },
                     set z(value) {
                         this.wndElement.css('z-index', value);
+                        this._z = value;
                     },
                     get z() {
-                        return this.z;
+                        return this._z;
                     },
                     focus: function() {
                         this.active = true;
                         return this;
                     },
-
                     blur: function() {
                         this.active = false;
+                        return this;
+                    },
+                    get maximized() {
+                        return this._maximized;
+                    },
+                    set maximized(value) {
+
+                        var appendTo = this.appendTo[0];
+
+                        if(value) {
+
+                            this._restore = this.stamp();
+
+                            this.movable = !value;
+                            this.resizable = !value;
+
+                            this.move(0,0);
+                            this.resize(appendTo.offsetWidth, appendTo.offsetHeight);
+
+                        } else {
+
+                            if (this._restore) {
+                                var position = this._restore.position,
+                                    size = this._restore.size;
+
+                                this.movable = this._restore.movable;
+                                this.resizable = this._restore.resizable;
+
+                                this.move(position.x, position.y);
+                                this.resize(size.width, size.height);
+                            }
+
+                        }
+                        this._maximized = $scope.maximized = value;
+
+                    },
+                    get movable() {
+                        return this._movable;
+                    },
+                    set movable(value) {
+                        if (value) {
+                            this.titleBar.css('cursor', 'move');
+                        } else {
+                            this.titleBar.css('cursor', '');
+                        }
+                        this._movable = value;
+                    },
+                    stamp: function() {
+                        return {
+                            position: {
+                                x: this.x,
+                                y: this.y
+                            },
+                            size: {
+                                width: this.width,
+                                height: this.height
+                            },
+                            movable: this.movable,
+                            resizable: this.resizable
+                        };
+                    },
+                    resize: function(w, h) {
+                        this.width = w;
+                        this.height = h;
                         return this;
                     },
                     move: function(x, y) {
@@ -350,7 +438,7 @@
 
                 };
 
-                $scope.window = new Window($scope.options);
+                $scope.wnd = new Window($scope.options);
 
             }
         };

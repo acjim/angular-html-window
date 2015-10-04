@@ -3,7 +3,9 @@
         <span class="ng-window-title">{{title}}</span>
         <div class="ng-window-actions">
             <a role="button">
-                <span class="ng-window-icon ng-window-maximize"></span>
+                <span id="ng-window-maximize"
+                      ng-class="{'ng-window-icon ng-window-maximize': !maximized, 'ng-window-icon ng-window-contract': maximized }">
+                </span>
             </a>
             <a role="button">
                 <span class="ng-window-icon ng-window-close"></span>
