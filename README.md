@@ -2,6 +2,24 @@
 This is a AngularJS module that provides a draggable and resizable window directive.  
 Based on https://github.com/rlamana/Ventus
 
+## How to use
+
+### Install via npm
+TODO
+
+### Include in your project
+Include the css and javascript in your html file.
+```html
+  <link rel="stylesheet" type="text/css" href="path/to/library/ngHtmlWindow.css" />
+  <script type="text/javascript" src="path/to/library/ngHtmlWindow.js" />
+```
+And include it as a dependency in your application.
+```javascript
+angular.module('demo', ['ngHtmlWindow']);
+```
+
+
+
 ## Events
 Events are broadcast on the scope where the window is attached. This means they are available to any controller inside of the ng-html-window container.
 

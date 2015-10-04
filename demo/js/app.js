@@ -32,4 +32,10 @@ angular.module('demo', ['ngHtmlWindow'])
             }
         };
 
+        $scope.windows[2] = {
+            options: {
+                x: 500,
+                y: 300
+        }};
+
     });

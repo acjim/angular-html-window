@@ -91,7 +91,7 @@
                     NG_WINDOW_MAXIMIZE = "#ng-window-maximize",
                     NG_WINDOW_CLOSE = ".ng-window-close";
 
-                var smoothValue = 3,
+                var resizeHandlesSmoothValue = 3,
                     debounceEvent = null;
 
 
@@ -233,6 +233,8 @@
                                     initialSize = this._resizing.initialSize,
                                     newHeight,
                                     newWidth,
+                                    newY,
+                                    newX,
                                     windowRight,
                                     windowBottom,
                                     options = this.options,
@@ -243,15 +245,14 @@
                                 // resizing in east west direction
                                 if (resizeDirection.indexOf("e") > -1) {
 
-                                    this.width = this.constrain(x - initialPosition.left + smoothValue, options.minWidth, options.maxWidth);
+                                    newWidth = this.constrain(x - initialPosition.left + resizeHandlesSmoothValue, options.minWidth, options.maxWidth);
 
                                 } else if (resizeDirection.indexOf("w") > -1) {
 
                                     windowRight = initialPosition.left + initialSize.width;
-                                    newWidth = this.constrain(windowRight - x - smoothValue, options.minWidth, options.maxWidth);
+                                    newWidth = this.constrain(windowRight - x - resizeHandlesSmoothValue, options.minWidth, options.maxWidth);
 
-                                    this.width = newWidth;
-                                    this.x = windowRight - newWidth;
+                                    newX = windowRight - newWidth;
 
                                 }
 
@@ -262,22 +263,16 @@
                                     windowBottom = initialPosition.top + initialSize.height;
                                     newHeight = this.constrain(windowBottom - y, options.minHeight, options.maxHeight);
 
-                                    this.y = windowBottom - newHeight;
-                                    this.height = newHeight;
+                                    newY = windowBottom - newHeight;
 
                                 } else if (resizeDirection.indexOf("s") > -1) {
 
-                                    this.height = this.constrain(y - initialPosition.top, options.minHeight, options.maxHeight);
+                                    newHeight = this.constrain(y - initialPosition.top, options.minHeight, options.maxHeight);
 
                                 }
 
-                                // broadcast an event that resize happened (debounced to 50ms)
-                                if(debounceEvent) $timeout.cancel(debounceEvent);
-                                debounceEvent = $timeout(function() {
-                                    $scope.$broadcast('ngWindow.resize', this);
-                                    debounceEvent = null;
-                                }, 50);
-
+                                this.resize(newWidth, newHeight);
+                                this.move(newX, newY);
 
                                 this.options.onResize();
 
@@ -474,6 +469,14 @@
                         };
                     },
                     resize: function(w, h) {
+
+                        // broadcast an event that resize happened (debounced to 50ms)
+                        if(debounceEvent) $timeout.cancel(debounceEvent);
+                        debounceEvent = $timeout(function() {
+                            $scope.$broadcast('ngWindow.resize', this);
+                            debounceEvent = null;
+                        }, 50);
+
                         this.width = w;
                         this.height = h;
                         return this;
