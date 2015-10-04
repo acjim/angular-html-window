@@ -74,9 +74,32 @@
     function ngHtmlWindow($document, $timeout, ngWindowManager) {
 
         return {
-            templateUrl: function(tElement, tAttrs) {
-                return tAttrs.templateUrl || 'src/ngHtmlWindow.html';
-            },
+            template: "<div class=\"ng-window\">"
+            + "    <div class=\"ng-window-titlebar\">"
+            + "        <span class=\"ng-window-title\">{{wnd.title}}<\/span>"
+            + "        <div class=\"ng-window-actions\">"
+            + "            <a role=\"button\">"
+            + "                <span id=\"ng-window-maximize\""
+            + "                      ng-class=\"{'ng-window-icon ng-window-maximize': !wnd.maximized, 'ng-window-icon ng-window-contract': wnd.maximized }\">"
+            + "                <\/span>"
+            + "            <\/a>"
+            + "            <a role=\"button\">"
+            + "                <span class=\"ng-window-icon ng-window-close\"><\/span>"
+            + "            <\/a>"
+            + "        <\/div>"
+            + "    <\/div>"
+            + "    <div class=\"ng-window-content\">"
+            + "        <div ng-transclude=\"true\"><\/div>"
+            + "    <\/div>"
+            + "    <div class=\"ng-window-resize ng-window-resize-n\"><\/div>"
+            + "    <div class=\"ng-window-resize ng-window-resize-e\"><\/div>"
+            + "    <div class=\"ng-window-resize ng-window-resize-s\"><\/div>"
+            + "    <div class=\"ng-window-resize ng-window-resize-w\"><\/div>"
+            + "    <div class=\"ng-window-resize ng-window-resize-se\"><\/div>"
+            + "    <div class=\"ng-window-resize ng-window-resize-sw\"><\/div>"
+            + "    <div class=\"ng-window-resize ng-window-resize-ne\"><\/div>"
+            + "    <div class=\"ng-window-resize ng-window-resize-nw\"><\/div>"
+            + "<\/div>",
             restrict: 'E',
             replace: true,
             transclude: true,
@@ -193,7 +216,9 @@
                                     top: this.y,
                                     left: this.x
                                 }
+
                             };
+                            console.log(this.appendTo.offset);
 
                             angular.element($document[0].body).css('cursor', this._resizing.resizeDirection + '-resize');
 
@@ -250,6 +275,9 @@
                                 } else if (resizeDirection.indexOf("w") > -1) {
 
                                     windowRight = initialPosition.left + initialSize.width;
+                                    console.log("x: " + x);
+                                    console.log("posLeft: " + initialPosition.left);
+
                                     newWidth = this.constrain(windowRight - x - resizeHandlesSmoothValue, options.minWidth, options.maxWidth);
 
                                     newX = windowRight - newWidth;

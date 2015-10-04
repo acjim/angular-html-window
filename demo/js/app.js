@@ -5,15 +5,11 @@ angular.module('demo', ['ngHtmlWindow'])
 
         $scope.windows[0] = {
             options: {
-                title: 'lol',
+                title: 'Another Window',
                 onClose: function() {
-                    console.log("close function");
-
                     var windows = $scope.windows;
                     var index = windows.indexOf(this);
                     windows.splice(index, 1);
-
-                    console.log($scope.windows);
                 }
             }
         };
