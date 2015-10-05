@@ -69,9 +69,9 @@
     }
 
     angular.module('ngHtmlWindow')
-        .directive('ngHtmlWindow', ['$document', '$timeout', 'ngWindowManager', ngHtmlWindow]);
+        .directive('ngHtmlWindow', ['$document', '$window', '$timeout', 'ngWindowManager', ngHtmlWindow]);
 
-    function ngHtmlWindow($document, $timeout, ngWindowManager) {
+    function ngHtmlWindow($document, $window, $timeout, ngWindowManager) {
 
         return {
             template: "<div class=\"ng-window\">"
@@ -151,12 +151,13 @@
 
 
                     // Get references to window elements
+                    this.w = angular.element($window);
                     this.appendTo = this.options.appendTo;
                     this.wndElement = element;
                     this.titleBar = angular.element(element[0].querySelector(NG_WINDOW_TITLEBAR));
                     this.resizeHandles = angular.element(element[0].querySelectorAll(NG_WINDOW_RESIZEHANDLES));
                     this.maximizeButton = angular.element(element[0].querySelector(NG_WINDOW_MAXIMIZE));
-                    this.closeButton = angular.element(element[0].querySelector(NG_WINDOW_CLOSE));
+                    this.closeButton = angular.element(element[0].querySelector(NG_WINDOW_CLOSE))
 
                     // Add event listeners
                     this.appendTo.bind('mousemove', this.events.mousemove.bind(this));
@@ -166,6 +167,7 @@
                     this.wndElement.bind('mousedown', this.events.wnd_mousedown.bind(this));
                     this.maximizeButton.bind('click', this.events.maximize.bind(this));
                     this.resizeHandles.bind('mousedown', this.events.resize_handler_mousedown.bind(this));
+                    this.w.bind('resize', this.events.windowResize.bind(this));
 
                     // Dimensions
                     this.width = this.options.width;
@@ -304,6 +306,17 @@
                                     $scope.maximized;
                                 });
                             }
+                        },
+                        windowResize: function() {
+
+                            var parent;
+
+                            // Resize maximized windows with the browser window
+                            if (this.maximized) {
+                                parent = this.appendTo[0].getBoundingClientRect();
+                                this.resize(parent.width, parent.height);
+                            }
+
                         },
                         close: function() {
 
