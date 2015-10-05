@@ -117,6 +117,8 @@
                 var resizeHandlesSmoothValue = 3,
                     debounceEvent = null;
 
+                // prevent error if no options object was passed
+                var options = options || {};
 
                 var Window = function (options) {
 
@@ -163,13 +165,7 @@
                     this.closeButton.bind('click', this.events.close.bind(this));
                     this.wndElement.bind('mousedown', this.events.wnd_mousedown.bind(this));
                     this.maximizeButton.bind('click', this.events.maximize.bind(this));
-
-                    //Add resize listeners
-                    for (var i = 0; i < this.resizeHandles.length; i++) {
-                        angular.element(this.resizeHandles[i])
-                            .bind('mousedown', this.events.resize_handler_mousedown.bind(this));
-                    }
-
+                    this.resizeHandles.bind('mousedown', this.events.resize_handler_mousedown.bind(this));
 
                     // Dimensions
                     this.width = this.options.width;
