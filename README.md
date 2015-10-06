@@ -1,5 +1,5 @@
 # Angular HTML Window
-This is a AngularJS module that provides a draggable and resizable window directive.  
+AngularJS module that provides a draggable and resizable window directive.  
 Based on https://github.com/rlamana/Ventus
 
 ## How to use
@@ -22,7 +22,7 @@ angular.module('demo', ['ngHtmlWindow']);
 ```
 
 ### Creating a window
-You can create windows by including the directive in your HTML. You can use ng-repeat to iterate through a collection.
+You can create windows by including the directive in your HTML. Use ng-repeat to iterate through a collection in the scope.
 ```html
 <ng-html-window options="options" ng-repeat="window in windows">
  <!--your content goes here-->
@@ -30,7 +30,7 @@ You can create windows by including the directive in your HTML. You can use ng-r
 ```
 
 ### Options
-You can specify options and handlers in the options object. These are the standard values:
+Specify options and handlers in the options object. These are the standard values:
 ```javascript
 options = {
     title: 'Untitled window's,
