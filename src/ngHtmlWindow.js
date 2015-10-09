@@ -59,7 +59,6 @@
             }
 
             win.z = getCurrentZValue();
-            console.log(win.z);
 
             // Reset z values if it exceeds maxZ
             if (currentZ > maxZ) {
