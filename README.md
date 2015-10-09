@@ -72,9 +72,9 @@ $scope.$on('ngWindow.inactive', function(e, windowObject){});
 ```
 
 ## Z-Handling
-The extent of z-values used for the window layering ranges from:
+The extent of z-values used for the window layering ranges from and to those values. 
 ```javascript
  var baseZ = 1000,
      maxZ = 2000;
 ```
-Be sure to consider this when you want to display other elements on top or bellow this windows.
+Be sure to consider this when you want to display other elements on top or bellow the windows.
