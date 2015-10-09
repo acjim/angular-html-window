@@ -8,9 +8,11 @@
 
     function ngWindowManager() {
 
-        var currentZ = 1;
-
         var windows = [];
+
+        var currentZ = null,
+            baseZ = 1000,
+            maxZ = 2000;
 
         return {
             getCurrentZValue: getCurrentZValue,
@@ -22,6 +24,9 @@
         //////////////////
 
         function getCurrentZValue() {
+            if (!currentZ) {
+                currentZ = baseZ;
+            }
             return currentZ++;
         }
 
@@ -44,8 +49,6 @@
 
         function focus(win) {
 
-            var maxZ = 20000;
-
             //Remove window from array and add it to the top of it
             var index = windows.indexOf(win);
             windows.splice(index, 1);
@@ -55,15 +58,21 @@
                 windows[i].blur();
             }
 
+            win.z = getCurrentZValue();
+            console.log(win.z);
+
             // Reset z values if it exceeds maxZ
-            if (currentZ > maxZ + windows.length) {
-                for (var z, i = windows.length; i--;) {
-                    z = windows[i].z;
-                    windows[i].z = z - maxZ;
+            if (currentZ > maxZ) {
+
+                currentZ = baseZ;
+
+                for(var i = 0; i < windows.length; i++) {
+                    windows[i].z = getCurrentZValue();
                 }
+
             }
 
-            win.z = getCurrentZValue();
+
         }
 
     }

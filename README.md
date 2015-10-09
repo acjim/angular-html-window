@@ -70,3 +70,11 @@ The same goes for when a window looses the focus:
 ```javascript
 $scope.$on('ngWindow.inactive', function(e, windowObject){});
 ```
+
+## Z-Handling
+The extent of z-values used for the window layering ranges from:
+```javascript
+ var baseZ = 1000,
+     maxZ = 2000;
+```
+Be sure to consider this when you want to display other elements on top or bellow this windows.
