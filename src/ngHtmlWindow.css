@@ -62,6 +62,11 @@
     border-radius: 0 0 4px 4px;
 }
 
+.ng-window-content > div {
+    height: 100%;
+    width: 100%;
+}
+
 .ng-window-resize {
     position: absolute;
 }
