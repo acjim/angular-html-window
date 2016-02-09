@@ -223,7 +223,7 @@
                             event.preventDefault();
 
                         },
-                        title_mousedown: function(e) {
+                        title_mousedown: function(event) {
 
                             if (this.movable) {
                                 this._moving = this.toLocal({
@@ -232,7 +232,7 @@
                                 });
                             }
 
-                            e.preventDefault();
+                            event.preventDefault();
                         },
                         mousemove: function(event) {
 
@@ -261,8 +261,8 @@
                                     windowRight,
                                     windowBottom,
                                     options = this.options,
-                                    x = event.x,
-                                    y = event.y;
+                                    x = event.x || event.clientX,
+                                    y = event.y || event.clientY;
 
 
                                 // resizing in east west direction
