@@ -2,6 +2,8 @@
 AngularJS module that provides a draggable and resizable window directive.  
 Based on https://github.com/rlamana/Ventus
 
+**This project is no longer maintained! However, feel free to fork and PR.**
+
 ## How to use
 
 ### Install via npm
