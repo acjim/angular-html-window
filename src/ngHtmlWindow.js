@@ -208,7 +208,6 @@
                     events: {
                         wnd_mousedown: function(event) {
                             this.focus();
-                            event.preventDefault();
                         },
                         resize_handler_mousedown: function(event) {
 
